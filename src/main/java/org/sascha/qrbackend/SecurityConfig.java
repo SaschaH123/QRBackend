@@ -36,6 +36,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/company/register").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/company/all").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/offer/single/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .csrf(AbstractHttpConfigurer::disable)

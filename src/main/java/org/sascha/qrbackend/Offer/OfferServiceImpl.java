@@ -2,6 +2,7 @@ package org.sascha.qrbackend.Offer;
 
 import org.sascha.qrbackend.Company.CompanyRepo;
 import org.sascha.qrbackend.User.DTO.CreateOfferResponse;
+import org.sascha.qrbackend.User.DTO.GetSingleCompanyListResponse;
 import org.sascha.qrbackend.User.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -57,6 +58,24 @@ public class OfferServiceImpl implements OfferService {
                         offer.getOfferPoints(),
                         offer.getOfferStatus().toString(),
                         offer.getCreatedAt().toString()
+                ))
+                .collect(Collectors.toList());
+
+    }
+
+    public List<GetSingleCompanyListResponse> getSingleOffersByCompanyId(String companyId) {
+
+        var companyUUID = UUID.fromString(companyId);
+        List<Offer> singleOffers = offerRepo.findByCompany_CompanyId(companyUUID);
+
+        return singleOffers.stream()
+                .map(singleOffer -> new GetSingleCompanyListResponse(
+                        singleOffer.getOfferId().toString(),
+                        true,
+                        singleOffer.getCompany().getCompanyId().toString(),
+                        singleOffer.getOfferDesc(),
+                        singleOffer.getOfferName(),
+                        singleOffer.getOfferPoints()
                 ))
                 .collect(Collectors.toList());
 

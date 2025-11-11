@@ -3,6 +3,7 @@ package org.sascha.qrbackend.Offer;
 import org.sascha.qrbackend.User.DTO.CreateOfferRequest;
 import org.sascha.qrbackend.User.DTO.CreateOfferResponse;
 import org.sascha.qrbackend.User.DTO.GetCompanyListResponse;
+import org.sascha.qrbackend.User.DTO.GetSingleCompanyListResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,7 @@ public class OfferController {
     public OfferController(OfferService offerService) {
         this.offerService = offerService;
     }
+
     @PostMapping("/create")
     public ResponseEntity<?> createOffer(@RequestBody CreateOfferRequest request, Authentication authentication) {
 
@@ -49,6 +51,19 @@ public class OfferController {
     }
 
     }
+
+    @GetMapping("/single/{companyId}")
+    public ResponseEntity<List<GetSingleCompanyListResponse>> getSingleOffers(
+        @PathVariable String companyId) {
+
+        System.out.println("Suche alle Angebote einer Company");
+
+        List<GetSingleCompanyListResponse> singleCompanyOffers = offerService.getSingleOffersByCompanyId(companyId);
+
+        return ResponseEntity.ok(singleCompanyOffers);
+
+    }
+
 
     @GetMapping("/myoffers")
     public ResponseEntity<List<CreateOfferResponse>> getUserOffers(Authentication authentication) {
