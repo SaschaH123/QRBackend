@@ -41,7 +41,8 @@ public class AuthServiceImp implements AuthService {
                         u.getId().toString(),
                         "USER",
                         u.getFirstName() + " " + u.getLastName(),
-                        token
+                        token,
+                        u.getUserPoints()
                 );
             }
         }
@@ -56,12 +57,13 @@ public class AuthServiceImp implements AuthService {
                         c.getCompanyId().toString(),
                         "COMPANY",
                         c.getFirstName() + " " + c.getLastName(),
-                        token
+                        token,
+                        null
                 );
             }
 
         }
-        return new LoginResponse(false, "Email nicht registriert", null, null, null, null);
+        return new LoginResponse(false, "Email nicht registriert", null, null, null, null, null);
     }
 
 }

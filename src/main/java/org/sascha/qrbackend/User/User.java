@@ -26,7 +26,8 @@ public class User {
     @Column(nullable = false)
     private String password; // Verschlüsseltes Passwort
 
-
+    @Column()
+    private Integer userPoints = 0;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -90,5 +91,13 @@ public class User {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Integer getUserPoints() {
+        return userPoints;
+    }
+
+    public void setUserPoints(Integer userPoints) {
+        this.userPoints = userPoints;
     }
 }

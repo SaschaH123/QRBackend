@@ -20,8 +20,10 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Username existiert bereits");
         }
 
+        Integer userPoints = 0;
         String hashedPassword = passwordEncoder.encode(password);
         User user = new User(firstname, Lastname, email, hashedPassword);
+        user.setUserPoints(userPoints);
         return userRepo.save(user);
     }
 
