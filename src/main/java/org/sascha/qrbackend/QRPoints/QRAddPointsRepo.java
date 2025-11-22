@@ -7,6 +7,6 @@ import java.util.Optional;
 
 public interface QRAddPointsRepo extends JpaRepository<QRAddPointsEntity, String> {
 
-    Optional<QRTokenEntitiy> findByTokenHash(String tokenHash);
+    Optional<QRAddPointsEntity> findByTokenHash(String tokenHash);
 
 }

@@ -15,6 +15,9 @@ public class QRAddPointsEntity {
         @Column(nullable = false, unique = true, length = 60)
         private String tokenHash;
 
+        @Column(nullable = false, unique = true)
+        private String rawToken;
+
         @Column(nullable = false)
         private String companyId;
 
@@ -28,9 +31,10 @@ public class QRAddPointsEntity {
 
         public QRAddPointsEntity() {}
 
-    public QRAddPointsEntity(String tokenHash, String companyId, Integer points, Instant expiresAt, Instant usedAt) {
+    public QRAddPointsEntity(String tokenHash, String rawToken, String companyId, Integer points, Instant expiresAt, Instant usedAt) {
 
         this.tokenHash = tokenHash;
+        this.rawToken = rawToken;
         this.companyId = companyId;
         this.points = points;
         this.expiresAt = expiresAt;
@@ -53,6 +57,10 @@ public class QRAddPointsEntity {
     public void setTokenHash(String tokenHash) {
         this.tokenHash = tokenHash;
     }
+
+    public String getRawToken() {return rawToken;}
+
+    public void setRawToken(String rawToken) {this.rawToken = rawToken;}
 
     public String getCompanyId() {
         return companyId;

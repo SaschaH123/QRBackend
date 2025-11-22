@@ -1,10 +1,7 @@
 package org.sascha.qrbackend.QRPoints;
 
 import org.sascha.qrbackend.QR.QRService;
-import org.sascha.qrbackend.User.DTO.QRAddPointsIssueRequest;
-import org.sascha.qrbackend.User.DTO.QRAddPointsIssuerResponse;
-import org.sascha.qrbackend.User.DTO.QRIssuerDTORequest;
-import org.sascha.qrbackend.User.DTO.QRIssuerResponse;
+import org.sascha.qrbackend.User.DTO.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,7 +29,17 @@ public class QRAddPointsController {
 
         return ResponseEntity.ok(response);
 
+    }
 
+    @PostMapping("/add/user-points")
+    public ResponseEntity<QRReedemAddPointsFromCompanyResponse> reedemUserQR(@RequestBody QRReedemAddPointsFromCompanyRequest request, Authentication authentication) {
+
+        String userId = authentication.getName();
+        String token = request.getTokenhash();
+
+        QRReedemAddPointsFromCompanyResponse response = qrAddPointsService.qrRedeemScanFromUser(token, userId);
+
+        return ResponseEntity.ok(response);
 
     }
 
