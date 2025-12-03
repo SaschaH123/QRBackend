@@ -1,13 +1,11 @@
 package org.sascha.qrbackend.QR;
 
-import org.sascha.qrbackend.User.DTO.QRIssuerDTORequest;
-import org.sascha.qrbackend.User.DTO.QRIssuerResponse;
+import org.sascha.qrbackend.User.DTO.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("api/qr")
@@ -27,6 +25,33 @@ public class QRTokenController {
         return ResponseEntity.ok(response);
 
 
+
+    }
+    @GetMapping("/check-qr/{tokenHash}/{companyId}")
+    public ResponseEntity<QRRedeemCompanyUserResponse> qrStatus(
+            @PathVariable String tokenHash,
+            @PathVariable String companyId,
+            Authentication authentication) {
+
+        System.out.println("Token: " + tokenHash);
+
+        String userId =(String) authentication.getPrincipal();
+
+        QRRedeemCompanyUserResponse redeemUserStatus = qrService.qrStatus(tokenHash,userId, companyId);
+
+
+
+
+        return ResponseEntity.ok(redeemUserStatus);
+    }
+
+    @PostMapping("/company-user-scan")
+    public ResponseEntity<QRRedeemPointsFromUserResponse> userScan(@RequestBody QRRedeemPointsFromUserRequest request, Authentication authentication) {
+        String companyId = (String) authentication.getPrincipal();
+        String userId = (String) authentication.getPrincipal();
+        QRRedeemPointsFromUserResponse response = qrService.qrRedeemPointsFromUser(request.getTokenhash(), companyId, userId);
+
+        return ResponseEntity.ok(response);
 
     }
 

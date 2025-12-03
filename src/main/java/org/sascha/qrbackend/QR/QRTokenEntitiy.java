@@ -16,6 +16,9 @@ public class QRTokenEntitiy {
         @Column(nullable = false, unique = true, length = 60)
         private String tokenHash;
 
+        @Column(nullable = false, unique = true)
+        private String rawToken;
+
         @Column(nullable = false)
         private String userId;
 
@@ -35,10 +38,11 @@ public class QRTokenEntitiy {
 
         public QRTokenEntitiy() {}
 
-    public QRTokenEntitiy(String tokenHash, String userId, String companyId,
+    public QRTokenEntitiy(String tokenHash, String rawToken, String userId, String companyId,
                           String offerId, Integer points, Instant expiresAt, Instant usedAt) {
 
         this.tokenHash = tokenHash;
+        this.rawToken = rawToken;
         this.userId = userId;
         this.companyId = companyId;
         this.offerId = offerId;
@@ -63,6 +67,10 @@ public class QRTokenEntitiy {
     public void setTokenHash(String tokenHash) {
         this.tokenHash = tokenHash;
     }
+
+    public String getRawToken() {return rawToken;}
+
+    public void setRawToken(String rawToken) {this.rawToken = rawToken;}
 
     public String getUserId() {
         return userId;

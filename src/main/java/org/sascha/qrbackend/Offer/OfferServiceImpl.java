@@ -1,15 +1,14 @@
 package org.sascha.qrbackend.Offer;
 
 import org.sascha.qrbackend.Company.CompanyRepo;
+import org.sascha.qrbackend.EnterOfferUser.EnterOfferUser;
+import org.sascha.qrbackend.EnterOfferUser.EnterOfferUserRepo;
 import org.sascha.qrbackend.User.DTO.CreateOfferResponse;
 import org.sascha.qrbackend.User.DTO.GetSingleCompanyListResponse;
-import org.sascha.qrbackend.User.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,6 +19,9 @@ public class OfferServiceImpl implements OfferService {
 
     @Autowired
     CompanyRepo companyRepo;
+
+    @Autowired
+    EnterOfferUserRepo enterOfferUserRepo;
 
     public Offer createOffer(String companyId, String offerName, String offerDesc, Integer offerPoints, String offerStatus) {
 
@@ -33,7 +35,9 @@ public class OfferServiceImpl implements OfferService {
                 offerName,
                 offerDesc,
                 offerPoints,
-                status);
+                status,
+                null
+        );
 
         return offerRepo.save(offer);
     }
@@ -57,26 +61,46 @@ public class OfferServiceImpl implements OfferService {
                         offer.getOfferDesc(),
                         offer.getOfferPoints(),
                         offer.getOfferStatus().toString(),
-                        offer.getCreatedAt().toString()
+                        offer.getCreatedAt().toString(),
+                        offer.getImageURL()
                 ))
                 .collect(Collectors.toList());
 
     }
 
-    public List<GetSingleCompanyListResponse> getSingleOffersByCompanyId(String companyId) {
+    public List<GetSingleCompanyListResponse> getSingleOffersByCompanyId(String companyId, String userId) {
 
         var companyUUID = UUID.fromString(companyId);
+        var userUUID = UUID.fromString(userId);
         List<Offer> singleOffers = offerRepo.findByCompany_CompanyId(companyUUID);
 
+        EnterOfferUser enter = enterOfferUserRepo.findByUserIdAndCompanyId(userUUID, companyUUID)
+                .orElseThrow(() -> new RuntimeException("Kein Offer gefunden"));
+
+        Set<String> redeemedOffers = (enter != null)
+                ? enter.getRedeemedOffers()
+                : new HashSet<>();
+
+
         return singleOffers.stream()
-                .map(singleOffer -> new GetSingleCompanyListResponse(
-                        singleOffer.getOfferId().toString(),
-                        true,
-                        singleOffer.getCompany().getCompanyId().toString(),
-                        singleOffer.getOfferDesc(),
-                        singleOffer.getOfferName(),
-                        singleOffer.getOfferPoints()
-                ))
+                .map(singleOffer -> {
+                    String offerId = singleOffer.getOfferId().toString();
+
+                    // ✅ Check ob DIESER User das Offer eingelöst hat
+                    boolean isRedeemed = redeemedOffers.contains(offerId);
+                    System.out.println("Eingelöst?:" + isRedeemed);
+
+                    return new GetSingleCompanyListResponse(
+                            offerId,
+                            true,
+                            singleOffer.getCompany().getCompanyId().toString(),
+                            singleOffer.getOfferDesc(),
+                            singleOffer.getOfferName(),
+                            singleOffer.getOfferPoints(),
+                            isRedeemed,// ✅ Nur für diesen User!
+                            singleOffer.getImageURL()
+                    );
+                })
                 .collect(Collectors.toList());
 
     }

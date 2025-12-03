@@ -9,5 +9,5 @@ public interface OfferService {
 
     Offer createOffer(String companyId, String offerName, String offerDesc, Integer offerPoints, String offerStatus);
     public List<CreateOfferResponse> getOffersbyUserId(String companyId);
-    public List<GetSingleCompanyListResponse> getSingleOffersByCompanyId(String companyId);
+    public List<GetSingleCompanyListResponse> getSingleOffersByCompanyId(String companyId, String userId);
 }

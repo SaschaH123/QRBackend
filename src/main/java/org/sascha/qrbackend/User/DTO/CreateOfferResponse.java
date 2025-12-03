@@ -2,24 +2,28 @@ package org.sascha.qrbackend.User.DTO;
 
 public class CreateOfferResponse {
 
-    private boolean success;
-    private String offerId;
-    private String userId;
-    private String offerDesc;
-    private String offerName;
-    private Integer offerPoints;
-    private String offerStatus;
-    private String createdAt;
+    public boolean success;
+    public String offerId;
+    public String userId;
+    public String offerName;
+    public String offerDesc;
+    public Integer offerPoints;
+    public String offerStatus;
+    public String createdAt;
+    public String imageUrl;
 
-    public CreateOfferResponse(boolean success, String offerId, String userId, String offerName, String offerDesc, Integer offerPoints, String offerStatus, String createdAt) {
+    public CreateOfferResponse() {}
+
+    public CreateOfferResponse(boolean success, String offerId, String userId, String offerName, String offerDesc, Integer offerPoints, String offerStatus, String createdAt, String imageUrl) {
         this.success = success;
         this.offerId = offerId;
         this.userId = userId;
-        this.offerDesc = offerDesc;
         this.offerName = offerName;
+        this.offerDesc = offerDesc;
         this.offerPoints = offerPoints;
         this.offerStatus = offerStatus;
         this.createdAt = createdAt;
+        this.imageUrl = imageUrl;
     }
 
     public boolean isSuccess() {
@@ -85,6 +89,8 @@ public class CreateOfferResponse {
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
+
+    public String getImageUrl() {return imageUrl;}
 }
 
 

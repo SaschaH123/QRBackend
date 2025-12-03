@@ -1,6 +1,7 @@
 package org.sascha.qrbackend.QRPoints;
 
 import org.sascha.qrbackend.QR.QRTokenEntitiy;
+import org.sascha.qrbackend.User.DTO.QRReedemAddPointsFromCompanyResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

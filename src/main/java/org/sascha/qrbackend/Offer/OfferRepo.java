@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface OfferRepo extends JpaRepository<Offer, UUID> {
+public interface OfferRepo extends JpaRepository<Offer, String> {
 
     List<Offer> findByCompany_CompanyId(UUID companyId);
 
     Optional<Offer> findByOfferId(String offerId);
+
+    boolean existsByCompany_CompanyId(UUID companyId);
 
 
 

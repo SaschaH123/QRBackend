@@ -35,14 +35,20 @@ public class Offer {
     @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @Column
+    private LocalDateTime updatedAt;
+
+    private String imageURL;
+
     public Offer() {}
 
-    public Offer(Company company, String offerName, String offerDesc, Integer offerPoints, OfferStatus offerStatus) {
+    public Offer(Company company, String offerName, String offerDesc, Integer offerPoints, OfferStatus offerStatus, String imageURL) {
         this.company = company;
         this.offerName = offerName;
         this.offerDesc = offerDesc;
         this.offerPoints = offerPoints;
         this.offerStatus = offerStatus;
+        this.imageURL = imageURL;
     }
 
     public String getOfferId() {
@@ -100,4 +106,16 @@ public class Offer {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public String getImageURL() {return imageURL;}
+
+    public void setImageURL(String imageURL) {this.imageURL = imageURL;}
 }

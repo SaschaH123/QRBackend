@@ -3,6 +3,8 @@ package org.sascha.qrbackend.EnterOfferUser;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -19,6 +21,9 @@ public class EnterOfferUser {
 
 
     private Double userPoints;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Set<String> redeemedOffers = new HashSet<>();
 
     public EnterOfferUser() {}
 
@@ -59,4 +64,9 @@ public class EnterOfferUser {
     public void setUserPoints(Double userPoints) {
         this.userPoints = userPoints;
     }
+
+    public Set<String> getRedeemedOffers() {return redeemedOffers;}
+
+    public void setRedeemedOffers(Set<String> redeemedOffers) {this.redeemedOffers = redeemedOffers;}
 }
+

@@ -3,6 +3,8 @@ package org.sascha.qrbackend.QRPoints;
 import org.sascha.qrbackend.Company.CompanyRepo;
 import org.sascha.qrbackend.EnterOfferUser.EnterOfferUser;
 import org.sascha.qrbackend.EnterOfferUser.EnterOfferUserRepo;
+import org.sascha.qrbackend.Offer.Offer;
+import org.sascha.qrbackend.Offer.OfferRepo;
 import org.sascha.qrbackend.User.DTO.QRAddPointsIssuerResponse;
 import org.sascha.qrbackend.User.DTO.QRReedemAddPointsFromCompanyResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,9 @@ public class QRAddPointsServiceImpl implements QRAddPointsService {
 
     @Autowired
     CompanyRepo companyRepo;
+
+    @Autowired
+    OfferRepo offerRepo;
 
     public QRAddPointsIssuerResponse qrAddPointsissue(String companyId, Double userPrice) {
 
@@ -103,6 +108,11 @@ public class QRAddPointsServiceImpl implements QRAddPointsService {
                 .findByUserIdAndCompanyId(userUUID, companyUUID)
                 .orElseThrow(()->new RuntimeException("Kein Eintrag für User/Company"));
 
+        var company = companyRepo.findByCompanyId(companyUUID)
+                .orElseThrow(()->new RuntimeException("Keine Company unter dieser ID gefunden"));
+
+
+
             double newPoints = entry.getUserPoints() + addedUserPoints;
             entry.setUserPoints(newPoints);
 
@@ -113,7 +123,10 @@ public class QRAddPointsServiceImpl implements QRAddPointsService {
             return new QRReedemAddPointsFromCompanyResponse(
                     true,
                     "Punkte hinzugefügt",
-                    newPoints
+                    newPoints,
+                    entry.getCompanyId().toString(),
+                    company.getCompanyName()
+
 
 
             );
@@ -122,7 +135,9 @@ public class QRAddPointsServiceImpl implements QRAddPointsService {
             return new QRReedemAddPointsFromCompanyResponse(
                     false,
                     "Fehler: " + e.getMessage(),
-                    0.0
+                    0.0,
+                    null,
+                    null
             );
         }
     }
