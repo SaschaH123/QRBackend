@@ -32,11 +32,17 @@ public class Company {
     @Column(nullable = false)
     private Integer plz;
 
+    @Column
+    private String companyDesc;
+
     @Column(unique = true, nullable = false)
     private String companyEmail;
 
     @Column(nullable = false)
     private String companyPassword;
+
+    @Column
+    private String imageUrl;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -45,13 +51,14 @@ public class Company {
         this.createdAt = LocalDateTime.now();
     }
 
-    public Company(String companyName, String firstName, String lastName, String street, String city, Integer plz, String companyEmail, String companyPassword) {
+    public Company(String companyName, String firstName, String lastName, String street, String city, Integer plz, String companyDesc, String companyEmail, String companyPassword) {
         this.companyName = companyName;
         this.firstName = firstName;
         this.lastName = lastName;
         this.street = street;
         this.city = city;
         this.plz = plz;
+        this.companyDesc = companyDesc;
         this.companyEmail = companyEmail;
         this.companyPassword = companyPassword;
         this.createdAt = LocalDateTime.now();
@@ -113,6 +120,14 @@ public class Company {
         this.plz = plz;
     }
 
+    public String getCompanyDesc() {
+        return companyDesc;
+    }
+
+    public void setCompanyDesc(String companyDesc) {
+        this.companyDesc = companyDesc;
+    }
+
     public String getCompanyEmail() {
         return companyEmail;
     }
@@ -127,6 +142,14 @@ public class Company {
 
     public void setCompanyPassword(String companyPassword) {
         this.companyPassword = companyPassword;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public LocalDateTime getCreatedAt() {

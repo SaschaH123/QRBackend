@@ -1,5 +1,9 @@
 package org.sascha.qrbackend.QR;
 
+import org.sascha.qrbackend.Company.Company;
+import org.sascha.qrbackend.Company.CompanyRepo;
+import org.sascha.qrbackend.Employee.Employee;
+import org.sascha.qrbackend.Employee.EmployeeRepo;
 import org.sascha.qrbackend.EnterOfferUser.EnterOfferUser;
 import org.sascha.qrbackend.EnterOfferUser.EnterOfferUserRepo;
 import org.sascha.qrbackend.Offer.Offer;
@@ -17,6 +21,7 @@ import java.security.MessageDigest;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Base64;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -28,11 +33,14 @@ public class QRServiceImpl implements QRService{
     @Autowired
     EnterOfferUserRepo enterOfferUserRepo;
 
-
-
+    @Autowired
+    EmployeeRepo employeeRepo;
 
     @Autowired
     OfferRepo offerRepo;
+
+    @Autowired
+    CompanyRepo companyRepo;
 
     public QRIssuerResponse issue(String userId, String offerId) {
 
@@ -82,9 +90,10 @@ public class QRServiceImpl implements QRService{
         }
     }
 
-    public QRRedeemPointsFromUserResponse qrRedeemPointsFromUser(String token, String companyId, String userId) {
+    public QRRedeemPointsFromUserResponse qrRedeemPointsFromUser(String token, String companyId, String employeeId) {
 
         var companyUUID = UUID.fromString(companyId);
+        var employeeUUID = UUID.fromString(employeeId);
 
         QRTokenEntitiy addEntity = qrTokenRepo.findByTokenHash(token)
                 .orElseThrow(() -> new RuntimeException("Ungültiger Token"));
@@ -95,7 +104,7 @@ public class QRServiceImpl implements QRService{
             UUID qrId = UUID.fromString(parts[0]);
             String offerId = parts[1];
             Double userPoints = Double.parseDouble(parts[2]);
-            UUID userUUID = UUID.fromString(parts[3]);
+            UUID qrUserUUID = UUID.fromString(parts[3]);
             long timestamp = Long.parseLong(parts[4]);
 
             System.out.println("Offer ID: " + offerId);
@@ -104,19 +113,34 @@ public class QRServiceImpl implements QRService{
             Offer offer = offerRepo.findByOfferId(offerId)
                     .orElseThrow(() -> new IllegalArgumentException("Offer not found"));
 
-            // 2. ✅ Prüfe, ob das Offer zur scannenden Company gehört
-            if (!offer.getCompany().getCompanyId().equals(companyUUID)) {
-                return new QRRedeemPointsFromUserResponse(
-                        false,
-                        "Falsches Restaurant! Dieses Angebot gehört nicht zu Ihrem Restaurant.",
-                        null,
-                        null,
-                        offer.getOfferName()
-                );
+            Optional<Company> company = companyRepo.findByCompanyId(employeeUUID);
+            Optional<Employee> employee = employeeRepo.findById(employeeUUID);
+
+            if(company.isPresent()) {
+                Company c = company.get();
+                if (!offer.getCompany().getCompanyId().equals(c.getCompanyId())) {
+                    return new QRRedeemPointsFromUserResponse(
+                            false,
+                            "❌ Sie versuchen gerade einen QR-Code eines ihnen nicht zugewiesenen Restaurants einzulösen!",
+                            null,
+                            null,
+                            offer.getOfferName(),
+                            null
+                    );
+                }
+            } else if (employee.isPresent()) {
+                Employee e = employee.get();
+                if (!e.getCompany().getCompanyId().equals(companyUUID)) {
+                    return new QRRedeemPointsFromUserResponse(
+                            false,
+                            "❌ Sie versuchen gerade einen QR-Code eines ihnen nicht zugewiesenen Restaurants einzulösen!",
+                            null, null, null, null
+                    );
+                }
             }
 
             // 3. Hole den EnterOfferUser Eintrag
-            EnterOfferUser entry = enterOfferUserRepo.findByUserIdAndCompanyId(userUUID, companyUUID)
+            EnterOfferUser entry = enterOfferUserRepo.findByUserIdAndCompanyId(qrUserUUID, companyUUID)
                     .orElseThrow(() -> new IllegalArgumentException("User hat dieses Angebot nicht"));
 
             // 4. Prüfe, ob schon eingelöst
@@ -125,8 +149,9 @@ public class QRServiceImpl implements QRService{
                         false,
                         "Angebot wurde schon eingelöst",
                         entry.getUserPoints(),
-                        userUUID.toString(),
-                        offer.getOfferName()
+                        employeeUUID.toString(),
+                        offer.getOfferName(),
+                        offer.getOfferId()
                 );
             }
 
@@ -136,8 +161,9 @@ public class QRServiceImpl implements QRService{
                         false,
                         "Nicht genug Punkte! Benötigt: " + userPoints + ", Vorhanden: " + entry.getUserPoints(),
                         entry.getUserPoints(),
-                        userUUID.toString(),
-                        offer.getOfferName()
+                        employeeUUID.toString(),
+                        offer.getOfferName(),
+                        offer.getOfferId()
                 );
             }
 
@@ -159,8 +185,9 @@ public class QRServiceImpl implements QRService{
                     true,
                     "Angebot erfolgreich eingelöst!",
                     newUserPoints,
-                    userUUID.toString(),
-                    offer.getOfferName()
+                    qrUserUUID.toString(),
+                    offer.getOfferName(),
+                    offer.getOfferId()
             );
 
         } catch (Exception e) {
@@ -169,6 +196,7 @@ public class QRServiceImpl implements QRService{
             return new QRRedeemPointsFromUserResponse(
                     false,
                     "Fehler: " + e.getMessage(),
+                    null,
                     null,
                     null,
                     null
@@ -183,6 +211,8 @@ public class QRServiceImpl implements QRService{
 
         QRTokenEntitiy qrEntity = qrTokenRepo.findByTokenHash(token)
                 .orElseThrow(() -> new IllegalArgumentException("Token nicht gefunden"));
+
+
 
         EnterOfferUser enter = enterOfferUserRepo
                 .findByUserIdAndCompanyId(userUUID, companyUUID)

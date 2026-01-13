@@ -1,10 +1,12 @@
 package org.sascha.qrbackend.User;
 
+import org.sascha.qrbackend.User.DTO.ChangePasswordResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {

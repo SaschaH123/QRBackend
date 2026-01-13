@@ -40,6 +40,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/images/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/qr/issue").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/qr/add").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/api/employee/change-password/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .csrf(AbstractHttpConfigurer::disable)

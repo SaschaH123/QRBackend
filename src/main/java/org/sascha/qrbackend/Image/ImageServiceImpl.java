@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.UUID;
 
 @Service
 public class ImageServiceImpl implements ImageService {
@@ -28,6 +29,28 @@ public class ImageServiceImpl implements ImageService {
     }
 
     public byte[] loadImage(String fileName) throws IOException {
+        Path filePath = Paths.get(IMAGE_DIR + fileName);
+
+        if (!Files.exists(filePath)) {
+            throw new FileNotFoundException("Bild nicht gefunden");
+        }
+
+        return Files.readAllBytes(filePath);
+    }
+
+    public String saveCompanyImage(String companyId, MultipartFile file) throws IOException {
+
+        var companyUUID = UUID.fromString(companyId);
+
+        String fileName = "company_" + companyUUID + ".png";
+        Path filePath = Paths.get(IMAGE_DIR + fileName);
+
+        Files.write(filePath, file.getBytes());
+
+        return "api/images/" + fileName;
+    }
+
+    public byte[] loadCompanyImage(String fileName) throws IOException {
         Path filePath = Paths.get(IMAGE_DIR + fileName);
 
         if (!Files.exists(filePath)) {

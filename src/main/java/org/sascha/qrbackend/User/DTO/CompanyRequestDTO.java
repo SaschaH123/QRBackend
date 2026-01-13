@@ -12,6 +12,7 @@ public class CompanyRequestDTO {
     private String street;
     private String city;
     private Integer plz;
+    private String companyDesc;
     private String companyEmail;
     private String companyPassword;
 
@@ -20,7 +21,7 @@ public class CompanyRequestDTO {
     }
 
     public CompanyRequestDTO(String companyName, String firstName, String lastName,
-                             String street, String city, Integer plz,
+                             String street, String city, Integer plz, String companyDesc,
                              String companyEmail, String companyPassword) {
         this.companyName = companyName;
         this.firstName = firstName;
@@ -28,6 +29,7 @@ public class CompanyRequestDTO {
         this.street = street;
         this.city = city;
         this.plz = plz;
+        this.companyDesc = companyDesc;
         this.companyEmail = companyEmail;
         this.companyPassword = companyPassword;
     }
@@ -79,6 +81,14 @@ public class CompanyRequestDTO {
 
     public void setPlz(Integer plz) {
         this.plz = plz;
+    }
+
+    public String getCompanyDesc() {
+        return companyDesc;
+    }
+
+    public void setCompanyDesc(String companyDesc) {
+        this.companyDesc = companyDesc;
     }
 
     public String getCompanyEmail() {

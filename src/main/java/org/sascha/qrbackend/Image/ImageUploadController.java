@@ -1,7 +1,10 @@
 package org.sascha.qrbackend.Image;
 
+import org.sascha.qrbackend.Company.Company;
+import org.sascha.qrbackend.Company.CompanyRepo;
 import org.sascha.qrbackend.Offer.Offer;
 import org.sascha.qrbackend.Offer.OfferRepo;
+import org.sascha.qrbackend.User.DTO.UploadCompanyImageResponse;
 import org.sascha.qrbackend.User.DTO.UploadImageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -9,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 
@@ -20,10 +24,15 @@ public class ImageUploadController {
 
     private final OfferRepo offerRepo;
 
-    public ImageUploadController(ImageService imageService, OfferRepo offerRepo) {
+    private final CompanyRepo companyRepo;
+
+    public ImageUploadController(ImageService imageService, OfferRepo offerRepo, CompanyRepo companyRepo) {
         this.imageService = imageService;
         this.offerRepo = offerRepo;
+        this.companyRepo = companyRepo;
     }
+
+
 
     @PostMapping("/upload/offer/{offerId}")
     public ResponseEntity<?> uploadOfferImage(
@@ -68,4 +77,31 @@ public class ImageUploadController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PostMapping("/upload/company/{companyId}")
+    public ResponseEntity<?> uploadCompanyImage(@PathVariable String companyId,
+                                                @RequestParam("file") MultipartFile file) {
+
+        try {
+            String imageUrl = imageService.saveCompanyImage(companyId, file);
+
+            var companyUUID = UUID.fromString(companyId);
+
+            Company company = companyRepo.findByCompanyId(companyUUID)
+                    .orElseThrow(() -> new RuntimeException("Company nicht gefunden"));
+
+            company.setImageUrl(imageUrl);
+
+            companyRepo.save(company);
+            UploadCompanyImageResponse respone = new UploadCompanyImageResponse(imageUrl, "CompanyImage unter dieser ID " + companyUUID + " gespeichert", true);
+            return ResponseEntity.ok(respone);
+
+        } catch(IOException e) {
+            UploadImageResponse response = new UploadImageResponse(null, e.getMessage(), false);
+            return ResponseEntity.status(500).body(response);
+        }
+
+    }
+
+
 }

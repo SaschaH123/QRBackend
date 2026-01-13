@@ -1,5 +1,6 @@
 package org.sascha.qrbackend.Company;
 
+import org.sascha.qrbackend.User.DTO.CompanyRegisterResponse;
 import org.sascha.qrbackend.User.DTO.CompanyRequestDTO;
 import org.sascha.qrbackend.User.DTO.GetCompanyListResponse;
 import org.sascha.qrbackend.User.DTO.RegisterRequest;
@@ -22,9 +23,9 @@ public class CompanyController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody CompanyRequestDTO request) {
-        Company company = companyService.registerCompany(request.getCompanyName(),request.getFirstName(), request.getLastName(), request.getStreet(), request.getCity(), request.getPlz(), request.getCompanyEmail(), request.getCompanyPassword());
-        return ResponseEntity.ok(company);
+    public ResponseEntity<CompanyRegisterResponse> register(@RequestBody CompanyRequestDTO request) {
+        CompanyRegisterResponse response = companyService.registerCompany(request.getCompanyName(),request.getFirstName(), request.getLastName(), request.getStreet(), request.getCity(), request.getPlz(), request.getCompanyDesc(), request.getCompanyEmail(), request.getCompanyPassword());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/all")
@@ -37,4 +38,5 @@ public class CompanyController {
         return ResponseEntity.ok(companies);
 
     }
+
 }
